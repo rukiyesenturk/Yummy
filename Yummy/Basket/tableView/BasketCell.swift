@@ -40,7 +40,7 @@ class BasketCell: UITableViewCell {
         if var foodPiece = Int(lblFoodPiece.text!) {
             foodPiece += 1
             lblFoodPiece.text = String(foodPiece)
-            basketProtocol?.btnDecreasePieceClicked(indexPath: indexPath!, foodPiece: foodPiece)
+            basketProtocol?.btnIncreasePieceClicked(indexPath: indexPath!, foodPiece: foodPiece)
         }
     }
     
@@ -49,7 +49,7 @@ class BasketCell: UITableViewCell {
             if foodPiece > 1 {
                 foodPiece -= 1
                 lblFoodPiece.text = String(foodPiece)
-                basketProtocol?.btnIncreasePieceClicked(indexPath: indexPath!, foodPiece: foodPiece)
+                basketProtocol?.btnDecreasePieceClicked(indexPath: indexPath!, foodPiece: foodPiece)
             }
         }
     }

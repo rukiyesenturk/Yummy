@@ -7,6 +7,7 @@
 
 import UIKit
 import Kingfisher
+import Firebase
 
 class DetailVC: UIViewController {
 
@@ -16,13 +17,13 @@ class DetailVC: UIViewController {
     @IBOutlet weak var lblFoodPiece: UILabel!
     
     var food: Foods?
-
+    var basketFood: BasketFood?
     var presenter: ViewToPresenterDetail?
-    var userEmail:String?
     var foodPiece = 1
     var onePieceFood = 0
     var totalPrice = 0
-    
+    var titleInput: String?
+    var messageInput: String?
     override func viewDidLoad() {
         super.viewDidLoad()
         if let f = food {
@@ -36,18 +37,17 @@ class DetailVC: UIViewController {
             onePieceFood = Int(f.foodPrice)!
         }
         DetailRouter.createModule(ref: self)
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let sceneDelegate = windowScene.delegate as? SceneDelegate,
-              let userName = sceneDelegate.userName
-        else{
-            return
-        }
-        self.userEmail = userName
+
         lblFoodPiece.text = String(foodPiece)
     }
     @IBAction func btnAddToBasket(_ sender: Any) {
-        presenter?.addToBasket(food: food!, foodPiece: foodPiece, userEmail: userEmail ?? "")
-        navigationController?.popViewController(animated: true)
+        if let user = Auth.auth().currentUser?.email{
+            presenter?.addToBasket(food: food!, foodPiece: foodPiece, userEmail: user)
+            if titleInput != "" && messageInput != "" {
+                guard let titleInput = titleInput, let messageInput = messageInput else { return }
+                errorMessage(titleInput: titleInput, messageInput: messageInput)
+            }
+        }
     }
     @IBAction func btnIncreasePiece(_ sender: UIButton) {
         if foodPiece < 10 {
@@ -71,8 +71,18 @@ class DetailVC: UIViewController {
     }
     func errorMessage(titleInput: String, messageInput: String){
         let alert = UIAlertController(title: titleInput, message: messageInput, preferredStyle: UIAlertController.Style.alert)
-        let okButton = UIAlertAction(title: "Evet", style: UIAlertAction.Style.default, handler: nil)
+        let okButton = UIAlertAction(title: "Tamam", style: UIAlertAction.Style.default) { action in
+            if titleInput == "Uyarı!" || titleInput == "Sepet"{
+                self.navigationController?.popViewController(animated: true)
+            }
+        }
         alert.addAction(okButton)
         self.present(alert, animated: true, completion: nil)
+    }
+}
+extension DetailVC: PresenterToViewDetail{
+    func sendDataToView(titleInput: String, messageInput: String) {
+        self.titleInput = titleInput
+        self.messageInput = messageInput
     }
 }

@@ -32,6 +32,7 @@ class LoginInteractor: PresenterToInteractorLogin {
                 if error != nil{
                     self.presenter?.sendDataToPresenter(titleInput: "Error", messageInput: error?.localizedDescription ?? "You got an error, please try again!", success: false)
                 }else{
+                    BasketControl.sharedInstance.refresh()
                     self.presenter?.sendDataToPresenter(titleInput: "", messageInput: "", success: true)
                 }
             }

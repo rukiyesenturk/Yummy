@@ -9,9 +9,10 @@ import Foundation
 import Alamofire
 
 class DetailInteractor : PresenterToInteractorDetail{
+    var presenter: InteractorToPresenterDetail?
     
     func addToBasket(food: Foods, foodPiece: Int, userEmail: String) {
-        if !BasketControl.sharedInstance.basketControl.contains(food.foodName) {
+        if !BasketControl.sharedInstance.basketControl.contains(food) {
     
             let params:Parameters = ["yemek_adi":food.foodName, "yemek_resim_adi":food.foodImage, "yemek_fiyat":food.foodPrice, "yemek_siparis_adet":foodPiece, "kullanici_adi":userEmail]
             AF.request("http://kasimadalan.pe.hu/yemekler/sepeteYemekEkle.php",method: .post,parameters: params).response{ response in
@@ -22,27 +23,15 @@ class DetailInteractor : PresenterToInteractorDetail{
                         food.foodCount = foodPiece
                         food.userEmail = userEmail
                         
-                        BasketControl.sharedInstance.addToBasket(food.foodName)
+                        BasketControl.sharedInstance.addToBasket(food)
+                        self.presenter?.sendDataToPresenter(titleInput: "Sepet", messageInput: "Ürün sepetinize eklenmiştir.")
                     }catch {
                         print(error.localizedDescription)
                     }
                 }
             }
-        }
-    }
-    func deleteBasketFood(userEmail: String, basketFoodId: Int) {
-        let params:Parameters = ["kullanici_adi":userEmail,"sepet_yemek_id":basketFoodId]
-        AF.request("http://kasimadalan.pe.hu/yemekler/sepettenYemekSil.php", method: .post,parameters: params).response {
-            response in
-            if let data = response.data{
-                do {
-                    let answer = try JSONSerialization.jsonObject(with: data)
-                    print(answer)
-
-                }catch{
-                    print(error.localizedDescription)
-                }
-            }
+        }else {
+            presenter?.sendDataToPresenter(titleInput: "Uyarı!", messageInput: "Ürün sepetinizde mevcuttur.")
         }
     }
 }

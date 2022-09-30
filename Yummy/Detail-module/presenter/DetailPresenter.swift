@@ -8,12 +8,15 @@
 import Foundation
 
 class DetailPresenter: ViewToPresenterDetail {
+    var view: PresenterToViewDetail?
     var interactor: PresenterToInteractorDetail?
     
     func addToBasket(food: Foods, foodPiece:Int, userEmail:String) {
         interactor?.addToBasket(food: food, foodPiece: foodPiece, userEmail: userEmail)
     }
-    func deleteBasketFood(userEmail: String, basketFoodId: Int) {
-        interactor?.deleteBasketFood(userEmail: userEmail, basketFoodId: basketFoodId)
+}
+extension DetailPresenter: InteractorToPresenterDetail {
+    func sendDataToPresenter(titleInput: String, messageInput: String) {
+        view?.sendDataToView(titleInput: titleInput, messageInput: messageInput)
     }
 }

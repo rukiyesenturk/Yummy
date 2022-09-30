@@ -9,7 +9,11 @@ import Foundation
 
 class DetailRouter: PresenterToRouterDetail {
     static func createModule(ref: DetailVC) {
-        ref.presenter = DetailPresenter()
+        let presenter = DetailPresenter()
+        
+        ref.presenter = presenter
         ref.presenter?.interactor = DetailInteractor()
+        ref.presenter?.view = ref
+        ref.presenter?.interactor?.presenter = presenter
     }
 }

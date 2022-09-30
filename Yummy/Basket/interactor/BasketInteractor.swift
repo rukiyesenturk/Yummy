@@ -18,6 +18,7 @@ class BasketInteractor: PresenterToInteractorBasket {
         AF.request("http://kasimadalan.pe.hu/yemekler/sepettekiYemekleriGetir.php", method: .post,parameters: params).response {
             response in
             if let data = response.data {
+                print(data)
                 do{
                     let answer = try JSONDecoder().decode(Basket.self, from: data)
                     print(answer)
@@ -42,7 +43,6 @@ class BasketInteractor: PresenterToInteractorBasket {
                 do {
                     let answer = try JSONSerialization.jsonObject(with: data)
                     print(answer)
-                    BasketControl.sharedInstance.removeFromBasket(foodName)
                     self.fetchDataInBasket(userEmail: userEmail)
                 }catch{
                     print(error.localizedDescription)
@@ -58,7 +58,7 @@ class BasketInteractor: PresenterToInteractorBasket {
                 do {
                     let cevap = try JSONSerialization.jsonObject(with: data)
                     print(cevap)
-                    BasketControl.sharedInstance.addToBasket(foodName)
+                    //BasketControl.sharedInstance.addToBasket(foodName)
                 }catch {
                     print(error.localizedDescription)
                 }

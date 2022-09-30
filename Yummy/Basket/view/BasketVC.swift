@@ -6,16 +6,16 @@
 //
 
 import UIKit
+import Firebase
 
 class BasketVC: UIViewController {
 
     @IBOutlet weak var basketTableView: UITableView!
     @IBOutlet weak var lblBasketTotalPrice: UILabel!
     
-    var food: [Foods]?
+    var food: [Foods] = []
     var presenter: ViewToPresenterBasket?
     var basketList: [BasketFood] = []
-    var userEmail: String?
     var totalPrice = 0
     
     override func viewDidLoad() {
@@ -26,30 +26,26 @@ class BasketVC: UIViewController {
         
         BasketRouter.createModule(ref: self)
         
-        getUser()
     }
   
     override func viewWillAppear(_ animated: Bool) {
         totalPrice = 0
-        presenter?.fetchDataInBasket(userEmail: userEmail ?? "")
-        self.basketTableView.reloadData()
-    }
-    func getUser() {
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let sceneDelegate = windowScene.delegate as? SceneDelegate,
-              let userEmail = sceneDelegate.userName
-        else{
-            return
+        if let user = Auth.auth().currentUser?.email{
+            presenter?.fetchDataInBasket(userEmail: user)
+            self.basketTableView.reloadData()
         }
-        self.userEmail = userEmail
     }
+
     @IBAction func btnApproveBasket(_ sender: UIButton) {
         
         for i in basketList {
-          
-            presenter?.deleteBasketFood(userEmail: self.userEmail!, basketFoodId: Int(i.basketFoodId)!, foodName: i.basketFoodName)
+            if let user = Auth.auth().currentUser?.email {
+                BasketControl.sharedInstance.removeAll()
+                presenter?.deleteBasketFood(userEmail: user, basketFoodId: Int(i.basketFoodId)!, foodName: i.basketFoodName)
+                presenter?.fetchDataInBasket(userEmail: user)
+            }
+           
         }
-        presenter?.fetchDataInBasket(userEmail: self.userEmail!)
         lblBasketTotalPrice.text = "-- ₺"
         let alert = UIAlertController(title: "Siparişiniz Oluşturuldu.", message: "Hemen Hazırlanıyor.", preferredStyle: .alert)
         let okAction = UIAlertAction(title: "Evet", style: .destructive) {action in
@@ -63,6 +59,7 @@ class BasketVC: UIViewController {
 }
 extension BasketVC: PresenterToViewBasket {
     func sendToView(basketList: Array<BasketFood>) {
+        self.food = Array(BasketControl.sharedInstance.basketControl)
         self.basketList = basketList
         DispatchQueue.main.async {
             self.totalPrice = 0
@@ -103,16 +100,22 @@ extension BasketVC: UITableViewDelegate, UITableViewDataSource, BasketCellProtoc
         return cell
     }
     func btnIncreasePieceClicked(indexPath: IndexPath, foodPiece: Int) {
+        let food = self.food[indexPath.row]
         let b = self.basketList[indexPath.row]
         self.totalPrice = 0
+        BasketControl.sharedInstance.addToBasket(food)
+        self.food = Array(BasketControl.sharedInstance.basketControl)
         presenter?.deleteBasketFood(userEmail: b.basketUser, basketFoodId: Int(b.basketFoodId)!, foodName:b.basketFoodName)
         presenter?.addToBasket(foodName: b.basketFoodName, foodImage: b.basketImageName, foodPrice: b.basketFoodPrice, foodPiece: foodPiece, userEmail: b.basketUser)
         basketTableView.reloadData()
 
     }
     func btnDecreasePieceClicked(indexPath: IndexPath, foodPiece: Int) {
+        let food = self.food[indexPath.row]
         let b = self.basketList[indexPath.row]
         self.totalPrice = 0
+        BasketControl.sharedInstance.takeOutBasket(food)
+        self.food = Array(BasketControl.sharedInstance.basketControl)
         presenter?.deleteBasketFood(userEmail: b.basketUser, basketFoodId: Int(b.basketFoodId)!, foodName:b.basketFoodName)
         presenter?.addToBasket(foodName: b.basketFoodName, foodImage: b.basketImageName, foodPrice: b.basketFoodPrice, foodPiece: foodPiece, userEmail: b.basketUser)
         basketTableView.reloadData()
@@ -124,6 +127,11 @@ extension BasketVC: UITableViewDelegate, UITableViewDataSource, BasketCellProtoc
             let cancelAction = UIAlertAction(title: "İptal", style: .cancel) {action in}
             let okAction = UIAlertAction(title: "Evet", style: .destructive) {action in
                 self.totalPrice = 0
+                for f in self.food {
+                    if f.foodName == b.basketFoodName {
+                        BasketControl.sharedInstance.removeFromBasket(f)
+                    }
+                }
                 self.presenter?.deleteBasketFood(userEmail: b.basketUser, basketFoodId: Int(b.basketFoodId)!, foodName: b.basketFoodName)
                 self.basketTableView.reloadData()
             }
