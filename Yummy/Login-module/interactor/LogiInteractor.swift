@@ -17,7 +17,6 @@ class LoginInteractor: PresenterToInteractorLogin {
             Auth.auth().createUser(withEmail: email, password: password) { authdataresult, error in
                 if error != nil {
                     self.presenter?.sendDataToPresenter(titleInput: "Error", messageInput: error?.localizedDescription ?? "Error, Plese try again!", success: false)
-                    //self.errorMessage(titleInput: "Error", messageInput: error?.localizedDescription ?? "Error, Plese try again!")
                 }else{
                     self.presenter?.sendDataToPresenter(titleInput: "", messageInput: "", success: true)
                 }

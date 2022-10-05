@@ -44,9 +44,11 @@ class DetailVC: UIViewController {
         if let user = Auth.auth().currentUser?.email{
             presenter?.addToBasket(food: food!, foodPiece: foodPiece, userEmail: user)
             if titleInput != "" && messageInput != "" {
-                guard let titleInput = titleInput, let messageInput = messageInput else { return }
-                errorMessage(titleInput: titleInput, messageInput: messageInput)
+                if let titleInput = titleInput, let messageInput = messageInput {
+                    errorMessage(titleInput: titleInput, messageInput: messageInput)
+                }
             }
+            self.navigationController?.popViewController(animated: true)
         }
     }
     @IBAction func btnIncreasePiece(_ sender: UIButton) {
@@ -72,7 +74,7 @@ class DetailVC: UIViewController {
     func errorMessage(titleInput: String, messageInput: String){
         let alert = UIAlertController(title: titleInput, message: messageInput, preferredStyle: UIAlertController.Style.alert)
         let okButton = UIAlertAction(title: "Tamam", style: UIAlertAction.Style.default) { action in
-            if titleInput == "Uyarı!" || titleInput == "Sepet"{
+            if titleInput == "Uyarı!"{
                 self.navigationController?.popViewController(animated: true)
             }
         }

@@ -19,7 +19,6 @@ class ProfileVC: UIViewController {
     
 
     var slides: [ProfileSlide] = []
-    var user: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,20 +33,13 @@ class ProfileVC: UIViewController {
         layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         profileCollectionView.collectionViewLayout = layout
         
-        getUser()
+        if let user = Auth.auth().currentUser?.email{
+            txfUserEmail.text = user
+        }
         
         txfUserName.isUserInteractionEnabled = false
         txfUserEmail.isUserInteractionEnabled = false
         txfUserPhone.isUserInteractionEnabled = false
-    }
-    func getUser() {
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let sceneDelegate = windowScene.delegate as? SceneDelegate,
-              let userEmail = sceneDelegate.userName
-        else{
-            return
-        }
-        self.txfUserEmail.text = userEmail
     }
     @IBAction func btnEditProfile(_ sender: UIButton) {
         if sender.isEnabled == true {

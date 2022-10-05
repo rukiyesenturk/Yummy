@@ -117,8 +117,13 @@ extension HomeVC: UICollectionViewDelegate, UICollectionViewDataSource {
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if (collectionView == self.collectionViewFood) {
-            let film = foodList[indexPath.row]
-            performSegue(withIdentifier: "toDetail", sender: film)
+            if isSearching {
+                let food = filteredData[indexPath.row]
+                performSegue(withIdentifier: "toDetail", sender: food)
+            }else {
+                let food = foodList[indexPath.row]
+                performSegue(withIdentifier: "toDetail", sender: food)
+            }
         }
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

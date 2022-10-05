@@ -46,6 +46,7 @@ class BasketControl {
     }
     func removeAll() {
         basketControl.removeAll()
+        saveBasket()
     }
     func saveBasket() -> Void {
         do {

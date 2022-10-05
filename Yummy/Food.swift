@@ -41,7 +41,7 @@ class Foods: Codable {
 extension Foods: Equatable, Hashable {
     
     static func == (lhs: Foods, rhs: Foods) -> Bool {
-        return lhs.foodId == rhs.foodId
+        return lhs.foodName == rhs.foodName
     }
     
     func hash(into hasher: inout Hasher) {

@@ -25,10 +25,13 @@ class LoginVC: UIViewController {
         
         //gifView.loadGif(name: "yummy!")
         LoginRouter.createModule(ref: self)
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 16, weight: .bold, scale: .large)
+        let largeBolDoc = UIImage(systemName: "eye.slash", withConfiguration: largeConfig)
+        btnPassword.setImage(largeBolDoc, for: .normal)
     }
 
     @IBAction func btnPassword(_ sender: UIButton) {
-        let largeConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold, scale: .large)
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 16, weight: .bold, scale: .large)
         if iconClick == false {
             tfPassword.isSecureTextEntry = false
             let largeBolDoc = UIImage(systemName: "eye", withConfiguration: largeConfig)

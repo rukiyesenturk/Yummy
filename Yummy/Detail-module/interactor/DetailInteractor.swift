@@ -22,9 +22,7 @@ class DetailInteractor : PresenterToInteractorDetail{
                         print(cevap)
                         food.foodCount = foodPiece
                         food.userEmail = userEmail
-                        
                         BasketControl.sharedInstance.addToBasket(food)
-                        self.presenter?.sendDataToPresenter(titleInput: "Sepet", messageInput: "Ürün sepetinize eklenmiştir.")
                     }catch {
                         print(error.localizedDescription)
                     }
